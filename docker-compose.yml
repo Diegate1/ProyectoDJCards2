@@ -1,0 +1,100 @@
+version: '3.9'
+
+# Docker Compose for Local Development & Testing
+# For Render Production: Use individual Web Services + Managed Database
+# See DEPLOYMENT_RENDER.md for production deployment
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: pokemon_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-pokemontcg}
+      POSTGRES_USER: ${POSTGRES_USER:-pokemon}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pokemon}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-pokemon}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pokemon_network
+    command: >
+      -c shared_preload_libraries=pg_stat_statements
+      -c log_statement=all
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pokemon_backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: ${PORT:-10000}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-pokemon}:${POSTGRES_PASSWORD:-pokemon}@postgres:5432/${POSTGRES_DB:-pokemontcg}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+      API_BASE_URL: ${API_BASE_URL:-http://localhost:10000}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      SYNC_VERBOSE: ${SYNC_VERBOSE:-false}
+      DOCKER_ENVIRONMENT: "true"
+    ports:
+      - "${PORT:-10000}:${PORT:-10000}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - pokemon_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${PORT:-10000}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:10000}
+    container_name: pokemon_frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:10000}
+      DOCKER_ENVIRONMENT: "true"
+    ports:
+      - "${FRONTEND_PORT:-5173}:${FRONTEND_PORT:-5173}"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - pokemon_network
+
+  adminer:
+    image: adminer:latest
+    container_name: pokemon_adminer
+    restart: unless-stopped
+    ports:
+      - "${ADMINER_PORT:-8080}:8080"
+    depends_on:
+      - postgres
+    networks:
+      - pokemon_network
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  pokemon_network:
+    driver: bridge
+

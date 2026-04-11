@@ -1,0 +1,53 @@
+{
+  "name": "proyecto-dj-cards",
+  "version": "1.0.0",
+  "description": "Pokemon TCG API Data Ingestion System",
+  "main": "dist/main.js",
+  "scripts": {
+    "dev": "nest start --watch",
+    "build": "nest build",
+    "start": "node dist/main",
+    "start:prod": "node dist/main",
+    "db:up": "docker-compose up -d",
+    "db:down": "docker-compose down",
+    "db:reset": "docker-compose down -v && docker-compose up -d",
+    "migrate": "ts-node scripts/migration/migrate.ts",
+    "fix:refs": "ts-node scripts/migration/fix-corrupted-refs.ts",
+    
+    "_COMMENT_SYNC": "=== THREE MAIN SYNC METHODS ===",
+    "sync:english": "ts-node scripts/sync-tcgdex.ts en",
+    "sync:japanese": "npm run sync:tcgtracking:sets && npm run sync:tcgtracking:cards",
+    "sync:chinese": "ts-node scripts/sync-tcgdex-chinese-v2.ts",
+    "sync:full": "ts-node scripts/full-sync.ts",
+    
+    "_COMMENT_TCGTRACKING": "=== TCGTRACKING COMPONENTS (Japanese) ===",
+    "sync:tcgtracking:sets": "ts-node scripts/sync-tcgtracking-sets.ts",
+    "sync:tcgtracking:cards": "ts-node scripts/sync-tcgtracking-cards.ts",
+    
+    "_COMMENT_UTILITIES": "=== UTILITY & DEBUG SCRIPTS ===",
+    "sync:set": "ts-node scripts/sync-set.ts",
+    "update:tcgtracking:images": "ts-node scripts/migration/update-tcgtracking-images.ts",
+    "update:tcgtracking:logos": "ts-node scripts/migration/update-tcgtracking-logos-v2.ts"
+  },
+  "dependencies": {
+    "@nestjs/common": "^10.3.0",
+    "@nestjs/core": "^10.3.0",
+    "@nestjs/platform-express": "^10.3.0",
+    "axios": "^1.7.0",
+    "dotenv": "^16.3.1",
+    "pg": "^8.11.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^10.3.0",
+    "@types/express": "^5.0.6",
+    "@types/node": "^20.19.39",
+    "@types/pg": "^8.20.0",
+    "@types/uuid": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "ts-loader": "^9.5.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.3.3"
+  }
+}

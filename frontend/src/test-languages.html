@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Filtro de Idiomas</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; }
+        .filter { margin: 20px 0; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        select { padding: 8px; font-size: 16px; width: 100%; }
+        .info { background: #f0f0f0; padding: 15px; margin-top: 20px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test de Filtro de Idiomas</h1>
+    
+    <div class="filter">
+        <label for="language-select">Selecciona un idioma:</label>
+        <select id="language-select">
+            <option value="">Todos los idiomas</option>
+            <option value="English">English</option>
+            <option value="日本語">日本語 (Japonés)</option>
+            <option value="中文">中文 (Chino)</option>
+        </select>
+    </div>
+
+    <div class="info">
+        <h3>✅ Opciones en el SELECT:</h3>
+        <ul id="options-list"></ul>
+        
+        <h3>📊 Datos del API:</h3>
+        <pre id="api-data"></pre>
+    </div>
+
+    <script>
+        // Mostrar opciones del SELECT
+        const select = document.getElementById('language-select');
+        const optionsList = document.getElementById('options-list');
+        
+        Array.from(select.options).forEach(option => {
+            const li = document.createElement('li');
+            li.textContent = `value="${option.value}" → ${option.text}`;
+            optionsList.appendChild(li);
+        });
+
+        // Llamar al API
+        fetch('http://localhost:3000/api/sets?page=1&pageSize=5')
+            .then(r => r.json())
+            .then(data => {
+                const languageSet = new Set();
+                data.items.forEach(set => {
+                    (set.languages || []).forEach(lang => languageSet.add(lang));
+                });
+                
+                const apiData = {
+                    totalSets: data.pagination.totalItems,
+                    uniqueLanguagesInFirstPage: Array.from(languageSet),
+                    sampleSets: data.items.map(s => ({name: s.name, languages: s.languages}))
+                };
+                
+                document.getElementById('api-data').textContent = JSON.stringify(apiData, null, 2);
+            })
+            .catch(err => {
+                document.getElementById('api-data').textContent = `Error: ${err.message}`;
+            });
+    </script>
+</body>
+</html>

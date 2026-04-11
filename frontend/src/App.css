@@ -1,0 +1,189 @@
+/* Variables CSS para temas */
+:root {
+  --text-primary: #1a1a1a;
+  --text-secondary: #666;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9f9f9;
+  --border-color: #e0e0e0;
+  --hover-color: #e8e8e8;
+  --hover-bg: #f9f9f9;
+}
+
+[data-theme='dark'] {
+  --text-primary: #e4e4e4;
+  --text-secondary: #a0a0a0;
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --border-color: #3d3d3d;
+  --hover-color: #404040;
+  --hover-bg: #252525;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.app-navbar {
+  background-color: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.navbar-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #007bff;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.navbar-brand:hover {
+  color: #0056b3;
+  text-decoration: none;
+}
+
+.navbar-menu {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+}
+
+.navbar-menu li a {
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.navbar-menu li a:hover {
+  color: #007bff;
+}
+
+.btn-theme-toggle {
+  padding: 0.6rem 1.2rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-theme-toggle:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.app-main {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .app-navbar {
+    padding: 0.75rem 0;
+  }
+
+  .navbar-content {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .navbar-brand {
+    font-size: 1.25rem;
+  }
+
+  .navbar-menu {
+    gap: 1rem;
+    flex-basis: 100%;
+    order: 3;
+  }
+
+  .btn-theme-toggle {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .app-main {
+    padding: 1rem 0.5rem;
+  }
+}
+
+/* Estilos globales para modo noche */
+[data-theme='dark'] input,
+[data-theme='dark'] select,
+[data-theme='dark'] textarea {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+[data-theme='dark'] input::placeholder,
+[data-theme='dark'] select::placeholder {
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] table {
+  background-color: var(--bg-primary);
+}
+
+[data-theme='dark'] table th {
+  background-color: var(--bg-secondary);
+}
+
+[data-theme='dark'] table tbody tr:hover {
+  background-color: var(--hover-bg);
+}
+
+[data-theme='dark'] button:not(.btn-theme-toggle) {
+  transition: all 0.2s ease;
+}
+
+/* Scrollbar en modo noche */
+[data-theme='dark'] ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 5px;
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
+  background: #666;
+}
