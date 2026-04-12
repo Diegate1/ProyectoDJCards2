@@ -10,6 +10,5 @@ npm-debug.log*
 .vscode/
 *.swp
 *.swo
-package-lock.json
 yarn.lock
 
