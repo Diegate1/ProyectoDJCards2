@@ -4,6 +4,30 @@
 
 ---
 
+## 🔧 DEPLOYMENT FAILING? → DEBUG MODE
+
+**If your backend won't start or shows errors:**
+
+Use these environment variables to isolate the problem:
+
+```yaml
+# Test 1: Pure server startup (no database needed)
+SKIP_DATABASE=true
+SKIP_MIGRATIONS=true
+
+# Test 2: Server + Database connection
+SKIP_DATABASE=false
+SKIP_MIGRATIONS=true
+
+# Test 3: Full deployment (add after tests pass)
+SKIP_DATABASE=false
+SKIP_MIGRATIONS=false
+```
+
+**Complete debugging guide:** [RENDER_DEBUGGING.md](RENDER_DEBUGGING.md)
+
+---
+
 ## ⚡ 30-SECOND SUMMARY
 
 1. **Database:** Create PostgreSQL → Copy `DATABASE_URL`
@@ -103,6 +127,37 @@ git pull origin main
 ```
 
 ---
+
+### Issue: Backend shows 503 or won't start
+
+```
+❌ Problem:  Backend fails at startup
+✅ Fix:      
+   1. Check Render Logs (Dashboard → Logs tab)
+   2. If migration error: See RENDER_DEBUGGING.md
+   3. If "No open ports detected": Use SKIP_DATABASE=true test
+   4. Use debugging variables to isolate issue
+```
+
+**With debugging variables:**
+```
+SKIP_DATABASE=true
+SKIP_MIGRATIONS=true
+# This tests pure server startup, no database needed
+```
+
+See detailed debugging guide: [RENDER_DEBUGGING.md](RENDER_DEBUGGING.md)
+
+### Issue: "No open ports detected"
+
+```
+❌ Problem:  Server never starts listening
+✅ Fix:      
+   1. → See RENDER_DEBUGGING.md - TEST 1: Server Startup
+   2. Add SKIP_DATABASE=true, SKIP_MIGRATIONS=true
+   3. Check if server can start without deps
+   4. Then enable DB, then migrations incrementally
+```
 
 ### Issue: Backend shows 503
 

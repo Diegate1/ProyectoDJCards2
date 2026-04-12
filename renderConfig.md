@@ -454,7 +454,38 @@ curl -X POST https://pokemontcg-backend.onrender.com/admin/sync?type=full
 
 ---
 
-## 🐛 TROUBLESHOOTING
+## � ¿Deployment Fallando? → DEBUGGING GUIDE
+
+**Si el backend no abre puerto o muestra errores:**
+
+👉 Lee: [RENDER_DEBUGGING.md](RENDER_DEBUGGING.md)
+
+Este documento incluye:
+- ✅ Test 1: Server Startup (sin base de datos)
+- ✅ Test 2: Database Connection
+- ✅ Test 3: Migrations (full test)
+- 🔍 Debugging variables: `SKIP_DATABASE`, `SKIP_MIGRATIONS`
+- 📊 Common issues & fixes
+- 📋 Debug checklist
+
+**Uso rápido:**
+```
+Para testear solo el servidor (sin BD):
+  SKIP_DATABASE=true
+  SKIP_MIGRATIONS=true
+
+Para testear conexión a BD:
+  SKIP_DATABASE=false
+  SKIP_MIGRATIONS=true
+
+Para full test (server + DB + migrations):
+  SKIP_DATABASE=false
+  SKIP_MIGRATIONS=false
+```
+
+---
+
+## �🐛 TROUBLESHOOTING
 
 ### ❌ Build fails: "npm ERR! The package-lock.json file is missing"
 
