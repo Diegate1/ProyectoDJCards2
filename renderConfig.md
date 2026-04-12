@@ -44,6 +44,26 @@ git log --oneline -3  # Ver últimos commits
 git push origin main
 ```
 
+**⚠️ CRÍTICO:** Verify que `package-lock.json` exists en BOTH root AND `frontend/` directory:
+
+```bash
+# En terminal local, en raíz del proyecto
+ls package-lock.json            # ✅ Root package-lock.json
+ls frontend/package-lock.json   # ✅ Frontend package-lock.json
+
+# Si alguno NO existe:
+npm install
+cd frontend && npm install && cd ..
+git add package-lock.json frontend/package-lock.json
+git commit -m "Add package-lock.json files"
+git push origin main
+```
+
+**Por qué es importante?** 
+- Docker builds usan `npm ci` (no `npm install`)
+- `npm ci` **requiere** `package-lock.json` para reproductibilidad
+- Sin él, el build falla con: `npm ERR! The package-lock.json file is missing`
+
 ---
 
 ## 🔍 CONCEPTOS RENDER
@@ -109,7 +129,7 @@ Render Dashboard
 ```yaml
 Name:                 pokemontcg-db
 Database:             pokemontcg
-User:                 postgres  (username por defecto)
+User:                 d01j  
 Password:             [Render generará random]
 Region:               N. Virginia (o EU-Frankfurt según tu zona)
 Plan:                 Free Tier
@@ -146,6 +166,14 @@ postgresql://postgres:PASSWORD@dpg-xxxxx.render.com:5432/pokemontcg
 
 **⚠️ IMPORTANTE:** Guardar esta URL en un lugar seguro (texto, 1password, etc)
 Esta será tu `DATABASE_URL`
+
+Internal Database URL: postgresql://d01j:xVRQSjznCxjwphzlorV4BGvaxGicT2YR@dpg-d7ds4ihf9bms738biflg-a/pokemontcg_7wdx
+External Database URL: postgresql://d01j:xVRQSjznCxjwphzlorV4BGvaxGicT2YR@dpg-d7ds4ihf9bms738biflg-a.oregon-postgres.render.com/pokemontcg_7wdx
+Usarname: d01j
+Password: xVRQSjznCxjwphzlorV4BGvaxGicT2YR
+port: 5432
+Database: pokemontcg_7wdx
+Hostname: dpg-d7ds4ihf9bms738biflg-a
 
 ---
 
@@ -407,6 +435,30 @@ curl -X POST https://pokemontcg-backend.onrender.com/admin/sync?type=full
 ---
 
 ## 🐛 TROUBLESHOOTING
+
+### ❌ Build fails: "npm ERR! The package-lock.json file is missing"
+
+**Razón:** Docker build usa `npm ci` que requiere `package-lock.json` para reproducibilidad
+
+**Solución (LOCAL):**
+```bash
+# En terminal local, en raíz del proyecto
+npm install              # Genera root/package-lock.json
+cd frontend
+npm install              # Genera frontend/package-lock.json
+cd ..
+git add package-lock.json frontend/package-lock.json
+git commit -m "Add package-lock.json files"
+git push origin main
+```
+
+**Luego en Render:**
+- Dashboard → (Backend o Frontend) → Manual Deploy
+- El nuevo build usará los package-lock.json del repositorio
+
+**⚠️ Nota:** Si ves este error, verifica que:
+- `.gitignore` NO contiene `package-lock.json` (fue agregado a ese archivo)
+- Ambos `package-lock.json` están en el repositorio (`git log --follow package-lock.json`)
 
 ### ❌ Backend shows "503 Service Unavailable"
 
