@@ -121,17 +121,21 @@ ProyectoDJCards2/
 │   ├── package.json                     # 📦 Root scripts & deps
 │   ├── tsconfig.json                    # ⚙️ TypeScript root config
 │   ├── .gitignore                       # 🚫 Git ignore patterns
-│   └── Render.md                        # 🚀 Render deployment guide
+│   └── render.yaml                      # ⚙️ Render IaC config (optional)
 │
 ├── 📚 DOCUMENTATION (START HERE)
 │   ├── README.md                        # ⭐ Project overview
 │   ├── SYNC_METHODS.md                  # 🔄 Detailed sync documentation
 │   ├── README_ADMIN.md                  # 🔧 Admin endpoints
 │   ├── QUICKSTART.md                    # ⚡ Quick setup
-│   └── DEVELOPER_GUIDE.md               # 👨‍💻 THIS FILE
+│   ├── DEVELOPER_GUIDE.md               # 👨‍💻 THIS FILE
+│   └── START_HERE.md                    # 👋 Welcome for new developers
 │
-└── 🐳 DEPLOYMENT
-    └── Render.md                        # 🚀 Production deployment
+└── 🚀 RENDER DEPLOYMENT GUIDES
+    ├── renderConfig.md                  # 📖 Step-by-step (40+ KB)
+    ├── RENDER_QUICK_REFERENCE.md        # ⚡ Quick reference with checklists
+    ├── Render.md                        # 📋 Conceptual overview
+    └── RENDER_GUIDES_SUMMARY.md         # 📊 Summary of all guides
 ```
 
 ---
@@ -551,16 +555,22 @@ frontend/src/services/dataService.ts  # API client
 
 ## 🚀 DEPLOYMENT (Render.com)
 
-**For production deployment:**
-- See: [Render.md](../Render.md)
+**For production deployment, choose based on your style:**
+
+| Estilo | Documento | Descripción |
+|--------|-----------|------------|
+| 📖 **Step-by-step** | [renderConfig.md](../renderConfig.md) | Guía completa con 10 secciones, imágenes ASCII, y cada paso explicado |
+| ⚡ **Quick reference** | [RENDER_QUICK_REFERENCE.md](../RENDER_QUICK_REFERENCE.md) | Checklists, comandos, y troubleshooting rápido |
+| 📋 **Conceptual** | [Render.md](../Render.md) | Visión general y conceptos |
 
 **Quick checklist:**
 1. Push to GitHub
-2. Create PostgreSQL database in Render
-3. Create Backend Web Service (NestJS)
-4. Create Frontend Web Service (React)
-5. Set environment variables
-6. Deploy!
+2. Create PostgreSQL database in Render (see renderConfig.md Step 1)
+3. Create Backend Web Service (see renderConfig.md Step 2)
+4. Create Frontend Web Service (see renderConfig.md Step 3)
+5. Set environment variables (see renderConfig.md Step 4)
+6. Run data sync (see renderConfig.md Step 6)
+7. Deploy and verify!
 
 ---
 
@@ -607,7 +617,9 @@ npm run update:tcgtracking:images
 |----------|------------|
 | ¿Cómo sincronizo datos? | [SYNC_METHODS.md](../SYNC_METHODS.md) |
 | ¿Cuáles son los endpoints? | [README_ADMIN.md](../README_ADMIN.md) |
-| ¿Cómo deplopo a Render? | [Render.md](../Render.md) |
+| ¿Cómo deplopo a Render? (Detallado) | [renderConfig.md](../renderConfig.md) |
+| ¿Cómo deplopo a Render? (Rápido) | [RENDER_QUICK_REFERENCE.md](../RENDER_QUICK_REFERENCE.md) |
+| ¿Cómo deplopo a Render? (Conceptos) | [Render.md](../Render.md) |
 | ¿Cómo uso los scripts? | [scripts/README.md](../scripts/README.md) |
 
 ---
@@ -658,12 +670,18 @@ npm run update:tcgtracking:images
 - ✅ Optimized for Render.com multi-service deployment
 - ✅ Standardized ports (3000 backend, 3000 frontend via nginx)
 - ✅ Complete Developer Guide created
+- ✅ 📚 **NEW:** renderConfig.md (40+ KB step-by-step Render deployment guide)
+- ✅ 📚 **NEW:** RENDER_QUICK_REFERENCE.md (quick reference with checklists & troubleshooting)
 - ✅ Cleaned up legacy documentation
 
 **See:** git log for full history
+
+**Render Deployment Resources:**
+- **Detailed Setup:** See [renderConfig.md](../renderConfig.md) for complete step-by-step instructions (25-40 minutes to production)
+- **Quick Lookup:** See [RENDER_QUICK_REFERENCE.md](../RENDER_QUICK_REFERENCE.md) for checklists, environment variables, and common issues
 
 ---
 
 **Last updated:** April 12, 2026  
 **By:** AI Assistant  
-**Status:** ✅ Complete & Ready for developers
+**Status:** ✅ Complete & Ready for developers with Render deployment guides
