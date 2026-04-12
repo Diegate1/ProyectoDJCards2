@@ -1,20 +1,18 @@
 # 🎮 ProyectoDJCards2 - Pokémon TCG Data Ingestion System
 
-**Language:** [Español](#español) | [English](#english)
-
 Sistema completo de sincronización y visualización de datos de Pokémon Trading Card Game desde múltiples APIs en 3 idiomas: **Inglés**, **Japonés** y **Chino Simplificado**.
 
 ---
 
-## ⚡ Quick Start
+## ⚡ Quick Start (5 min)
 
 ```bash
-# 1. Setup
+# 1. Setup inicial
 npm install
 npm run db:up           # Levantar PostgreSQL
 npm run migrate         # Ejecutar migraciones
 
-# 2. Sincronizar datos
+# 2. Sincronizar datos (opcional)
 npm run sync:full       # Sincronizar TODAS las fuentes (EN, JA, ZH)
 
 # 3. Iniciar desarrollo
@@ -22,281 +20,268 @@ npm run dev             # Backend: http://localhost:3000
 cd frontend && npm run dev  # Frontend: http://localhost:5173
 ```
 
+👉 **Para desarrolladores nuevos:** Lee [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) primero
+
 ---
 
-## 📋 Tres Métodos de Sincronización (Sync Methods)
+## 🚀 START HERE
 
-| Método | Comando | Idioma | Fuente |
-|--------|---------|--------|--------|
-| **English** | `npm run sync:english` | 🇬🇧 English | Pokemon TCG API + TCGdex |
-| **Japanese** | `npm run sync:japanese` | 🇯🇵 Japonés | TCGTracking + TCGdex |
-| **Chinese** | `npm run sync:chinese` | 🇨🇳 Chino Simplificado | TCGdex |
-| **Full Sync** | `npm run sync:full` | 🌍 Todos (EN→JA→ZH) | Todas las APIs |
+| Necesitas... | Leer... |
+|---|---|
+| 👨‍💻 **Comenzar con el proyecto** | [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) ⭐ |
+| ⚡ **Quick setup (5 min)** | [QUICKSTART.md](QUICKSTART.md) |
+| 🔄 **Sincronizar datos** | [SYNC_METHODS.md](SYNC_METHODS.md) |
+| 🚀 **Deploy a Render** | [Render.md](Render.md) |
+| 🔧 **Admin endpoints** | [README_ADMIN.md](README_ADMIN.md) |
+| 🧹 **Qué se limpió** | [CLEANUP_LOG.md](CLEANUP_LOG.md) |
 
-📖 **Documentación detallada:** [SYNC_METHODS.md](SYNC_METHODS.md)
+---
+
+## 📋 Tres Métodos de Sincronización
+
+| Método | Comando | Idioma | Fuente | Tiempo |
+|--------|---------|--------|--------|--------|
+| **English** | `npm run sync:english` | 🇬🇧 EN | Pokemon TCG + TCGdex | 2-3m |
+| **Japanese** | `npm run sync:japanese` | 🇯🇵 JA | TCGTracking + TCGdex | 1-2m |
+| **Chinese** | `npm run sync:chinese` | 🇨🇳 ZH | TCGdex | 1-2m |
+| **Full Sync** | `npm run sync:full` | 🌍 ALL | Todas las APIs | 5-10m |
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
+ProyectoDJCards2/
+├── src/                     # Backend (Express + TypeScript)
+│   ├── main.ts             # 🚀 Entry point
+│   ├── modules/            # Feature modules
+│   │   ├── admin/          # Debug endpoints
+│   │   ├── data/           # Public API (/api/*)
+│   │   ├── pokemon-tcg/    # API client
+│   │   ├── tcgdex/         # Multilanguage client
+│   │   ├── tcgtracking/    # Japanese API client
+│   │   ├── sync/           # Sync services
+│   │   └── scraper/        # Web scraping
+│   ├── db/
+│   │   ├── database.ts     # 🔌 PostgreSQL connection
+│   │   └── migrations/     # 📋 SQL migrations
+│   └── common/             # Shared utilities
+│
+├── frontend/               # React + Vite
+│   ├── src/
+│   │   ├── pages/          # 📄 Sets, Cards, Details
+│   │   ├── services/       # 🔌 API client
+│   │   ├── components/     # 🧩 UI components
+│   │   └── types.ts        # 📝 DTO types
+│   ├── Dockerfile          # 🐳 Multi-stage build
+│   └── vite.config.ts      # ⚙️ Vite config
+│
+├── scripts/                # 🔧 CLI utilities
+│   ├── sync-tcgdex.ts           # Active ✅
+│   ├── sync-tcgtracking-*.ts    # Active ✅
+│   ├── full-sync.ts             # Active ✅
+│   ├── debug/               # 🐛 Debug scripts
+│   ├── migration/           # 📋 DB tools
+│   ├── analysis/            # 📊 Data analysis
+│   └── README.md            # 📘 Scripts guide
+│
+├── 🐳 Docker & Deployment
+│   ├── docker-compose.yml   # Multi-container (LOCAL)
+│   ├── Dockerfile           # Backend image
+│   ├── frontend/Dockerfile  # Frontend image  
+│   └── docker-entrypoint.sh # 🚀 Startup script
+│
+└── 📚 Documentation (Consolidated)
+    ├── DEVELOPER_GUIDE.md       # 👨‍💻 THIS IS YOUR START
+    ├── README.md               # THIS FILE
+    ├── QUICKSTART.md
+    ├── SYNC_METHODS.md
+    ├── README_ADMIN.md
+    ├── Render.md
+    ├── CLEANUP_LOG.md
+    └── scripts/README.md
+```
+
+---
+
+## 🔄 NPM Scripts - Common Tasks
+
+### 🔄 Sincronización (Sync)
+
+```bash
+npm run sync:full               # Sincronizar TODO (EN + JA + ZH)
+npm run sync:english            # Inglés + Internacional
+npm run sync:japanese           # Japonés
+npm run sync:chinese            # Chino Simplificado
+npm run sync:tcgtracking:sets   # Sets japoneses solo
+npm run sync:tcgtracking:cards  # Cartas japonesas solo
+```
+
+### 📊 Base de Datos
+
+```bash
+npm run migrate                 # Ejecutar migraciones
+npm run db:up                   # Levantar PostgreSQL
+npm run db:down                 # Detener PostgreSQL
+npm run db:reset                # ⚠️ Reset DB (borrar datos)
+```
+
+### 👨‍💻 Desarrollo
+
+```bash
+npm run dev                     # Backend dev (watch mode)
+npm run build                   # Compilar TypeScript
+npm run start                   # Producción backend
+npm run fix:refs                # Reparar referencias rotas
+```
 
 ---
 
 ## 🏗️ Arquitectura
 
 ```
-Frontend (React + Vite)
-    ↓ HTTP /api/*
-Backend (NestJS/Express)
-    ↓ SQL
-PostgreSQL Database
-```
+┌─────────────────┐        ┌──────────────┐      ┌──────────────┐
+│ External APIs   │        │ PostgreSQL   │      │ Browser      │
+│ - Pokemon TCG   │───────▶│ Database     │◀─────│ React + Vite │
+│ - TCGdex        │        │              │      │              │
+│ - TCGTracking   │        └──────────────┘      └──────────────┘
+│ - TCGCSV        │               ▲                     ▲
+└─────────────────┘               │                     │ /api/*
+                            Backend                     │
+                            Express.js          HTTP Requests
+                            (src/modules)
 
-**Fuentes de Datos:**
-- **Pokemon TCG API** → Sets y cartas oficiales (EN)
-- **TCGdex** → Información en 8 idiomas (EN, JA, ZH, etc)
-- **TCGTracking** → Sets y precios exclusivos de Japón (JA)
+DATA FLOW:
+1. Manual: npm run sync:* → Fetch from APIs → Parse → PostgreSQL
+2. User: Browser → Frontend → /api/* endpoints → Backend → SQL
+```
 
 ---
 
-## 🐳 Docker Deployment
+## 🔌 API Endpoints
+
+### Public (Frontend)
+
+```bash
+GET  /api/sets              # Listar sets (paginated)
+GET  /api/sets/:id          # Detalles del set
+GET  /api/cards             # Listar cartas (paginated)
+GET  /api/cards/:id         # Detalles de la carta
+GET  /api/cards/set/:setId  # Cartas de un set
+```
+
+### Admin / Debug
+
+```bash
+GET  /health                        # Health check
+GET  /admin/status/db               # Database status
+GET  /admin/apis/all                # APIs availability
+```
+
+📖 Complete list: [README_ADMIN.md](README_ADMIN.md)
+
+---
+
+## 🐳 Deployment
 
 ### Local Development
+
 ```bash
-docker-compose up -d    # Levanta: PostgreSQL + Backend + Frontend
-docker-compose logs -f  # Ver logs
-docker-compose down     # Detener
-```
+# Option 1: Native (separate terminals)
+npm run dev                 # Terminal 1 - Backend
+cd frontend && npm run dev  # Terminal 2 - Frontend
 
-### Production (Render)
-Ver: [DEPLOYMENT_RENDER.md](DEPLOYMENT_RENDER.md)
-
----
-
-## 📁 Project Structure
-
-```
-ProyectoDJCards2/
-├── src/                     # Backend (NestJS/Express)
-│   ├── main.ts             # Entry point
-│   ├── modules/            # Feature modules (API routes, sync logic)
-│   ├── db/                 # Database connection & migrations
-│   └── common/             # Shared utilities & types
-├── frontend/               # React + Vite frontend
-│   └── src/
-│       ├── pages/          # Sets, Cards, Details pages
-│       ├── services/       # API client (Axios)
-│       └── components/     # Reusable UI components
-├── scripts/                # CLI utilities
-│   ├── sync-*.ts          # Sync scripts (active)
-│   ├── full-sync.ts       # Orchestrated sync
-│   ├── debug/             # Debugging utilities
-│   ├── migration/         # Database migrations & tools
-│   └── analysis/          # Data analysis tools
-├── docker-compose.yml     # Multi-container orchestration
-├── Dockerfile             # Backend image
-└── SYNC_METHODS.md        # Sync documentation
-```
-
----
-
-## 🔄 NPM Scripts
-
-### Sincronización (Sync)
-```bash
-npm run sync:english        # Sincronizar inglés
-npm run sync:japanese       # Sincronizar japonés
-npm run sync:chinese        # Sincronizar chino
-npm run sync:full          # Sincronizar TODO
-
-# Componentes individuales
-npm run sync:tcgtracking:sets    # Solo sets japoneses
-npm run sync:tcgtracking:cards   # Solo cartas japonesas
-npm run sync:set <<set_id>>      # Un set específico
-```
-
-### Base de Datos
-```bash
-npm run migrate             # Ejecutar migraciones
-npm run db:up              # Levantar PostgreSQL
-npm run db:down            # Detener PostgreSQL
-npm run db:reset           # Reset DB (⚠️ BORRAR DATOS)
-```
-
-### Desarrollo
-```bash
-npm run dev                # Backend dev mode (watch)
-npm run build              # Build backend
-npm run start              # Start production backend
-```
-
----
-
-## 🔌 API Endpoints (Backend)
-
-### Public Endpoints (Frontend)
-```
-GET  /api/sets              # Listar todos los sets
-GET  /api/sets/:id          # Detalles del set
-GET  /api/cards             # Listar todos los sets
-GET  /api/cards/:id         # Detalles de la carta
-```
-
-### Admin Debug Endpoints
-```
-POST /admin/sync?type=full        # Trigger sync
-GET  /admin/sync/status           # Ver estado de sync
-GET  /admin/data/health           # Health check
-```
-
-📖 **Documentación completa:** [README_ADMIN.md](README_ADMIN.md)
-
----
-
-## 📊 Database Schema
-
-**Tablas principales:**
-- `sets` - Conjuntos de cartas (multi-idioma)
-- `cards` - Cartas individuales (multi-idioma)
-- `external_references` - Mapeos entre APIs (Pokemon TCG ID, TCGdex ID, TCGTracking ID)
-
-**Soporte multi-idioma:**
-- Cada tabla tiene columnas `_{lang}` (name_en, name_ja, name_zh, etc)
-- `external_references` mapea IDs entre 3 APIs
-
----
-
-## 🧹 Código Limpio & Mantenimiento
-
-✅ **Lo que eliminamos:**
-- Documentación antigua (15+ archivos MD deprecated)
-- Scripts duplicados/deprecated (sync-japanese-tcgdex.ts, etc)
-- Archivos temporales de sync
-
-✅ **Lo que reorganizamos:**
-- Scripts agrupados en: `/debug/`, `/migration/`, `/analysis/`
-- npm scripts organizados y documentados (ver package.json)
-
-✅ **Código activo:**
-- 6 métodos de sync claramente documentados
-- API routes limpias y typed
-- Frontend separado (Vite pre-build)
-
----
-
-## 🚀 Deployment
-
-### Development
-```bash
-npm run dev                 # Backend localhost:3000
-cd frontend && npm run dev  # Frontend localhost:5173
-```
-
-### Docker (Local)
-```bash
+# Option 2: Docker Compose
 docker-compose up -d
-# Backend: http://localhost:3000
-# Frontend: http://localhost:5173
+docker-compose logs -f
+docker-compose down
 ```
 
-### Production (Render)
-1. See [DEPLOYMENT_RENDER.md](DEPLOYMENT_RENDER.md) for step-by-step guide
-2. Or 1-click deploy with docker-compose.yml
+### Production (Render.com)
 
----
-
-## 🛠️ Technologies
-
-**Backend:** Node.js 18, NestJS, Express, TypeScript  
-**Frontend:** React 18, Vite, Axios, TypeScript  
-**Database:** PostgreSQL 16  
-**Deployment:** Docker, Docker Compose, Render  
-
----
-
-## 📚 Documentation
-
-| Doc | Purpose |
-|-----|---------|
-| [SYNC_METHODS.md](SYNC_METHODS.md) | 3 sync methods explained in detail |
-| [DEPLOYMENT_RENDER.md](DEPLOYMENT_RENDER.md) | Step-by-step Render deployment guide |
-| [README_ADMIN.md](README_ADMIN.md) | Admin endpoints & debugging |
-| [SYNC_STRATEGY.md](SYNC_STRATEGY.md) | Data sync strategy & architecture |
-| [DOCKER_SETUP.md](DOCKER_SETUP.md) | Docker configuration details |
-
----
-
-## 🐛 Troubleshooting
-
-**Q: "Cannot connect to database"**  
-A: Ensure `npm run db:up` succeeded and wait 10 seconds for postgres to initialize
-
-**Q: "npm run sync:full stuck"**  
-A: Check network connection. Sync can take 10-15 minutes. Check logs with `docker-compose logs backend`
-
-**Q: "Frontend shows blank"**  
-A: Make sure backend is running. Check `VITE_API_BASE_URL` in frontend .env
-
-See detailed troubleshooting in [DEPLOYMENT_RENDER.md](DEPLOYMENT_RENDER.md#troubleshooting)
-
----
-
-## 📝 License & Credits
-
-**Project:** ProyectoDJCards2  
-**Data Sources:**
-- Pokémon TCG API (Official)
-- TCGdex (Community)
-- TCGTracking (Community)
-
----
-
----
-
-# 🇬🇧 ENGLISH VERSION
-
-## Quick Start
-
-Same as above - follow "⚡ Quick Start" section
-
-## Three Sync Methods
-
-| Method | Command | Language | Source |
-|--------|---------|----------|--------|
-| English | `npm run sync:english` | 🇬🇧 English | Pokemon TCG API + TCGdex |
-| Japanese | `npm run sync:japanese` | 🇯🇵 Japanese | TCGTracking + TCGdex |
-| Chinese | `npm run sync:chinese` | 🇨🇳 Simplified Chinese | TCGdex |
-| Full Sync | `npm run sync:full` | 🌍 All Languages | All APIs |
-
-📖 **Detailed documentation:** [SYNC_METHODS.md](SYNC_METHODS.md)
-
----
-
-**For full English docs, see all `.md` files above - all documentation is in Spanish and English**
-
----
-
-
-# Obtener sets de Pokémon TCG API
-curl http://localhost:3000/admin/api-debug/pokemontcg/sets?page=1&pageSize=50
-
-# Obtener cartas de un set
-curl "http://localhost:3000/admin/api-debug/pokemontcg/cards?setId=sv1&page=1"
-
-# Obtener sets de TCGdex (multilenguaje)
-curl "http://localhost:3000/admin/api-debug/tcgdex/sets?lang=en"
-
-# Obtener grupos de TCGplayer
-curl http://localhost:3000/admin/api-debug/tcgcsv/groups
-```
-
-### Endpoints de Sincronización (guardan en BBDD)
+👉 **Complete guide:** [Render.md](Render.md)
 
 ```bash
-# Sincronizar todos los sets
-curl -X POST http://localhost:3000/admin/sync/sets/pokemontcg
+# Quick summary:
+1. Create PostgreSQL database in Render
+2. Create Backend Web Service
+3. Create Frontend Web Service
+4. Set environment variables
+5. Deploy!
 ```
 
-### Endpoints de Logs y Status
+---
 
-```bash
-# Ver logs de API
-curl http://localhost:3000/admin/logs?provider=pokemontcg&limit=50
+## 🧹 Project Maintenance
+
+✅ **April 12, 2026 Cleanup:**
+- Removed 14+ obsolete .md files (documentation consolidated)
+- Archived legacy scripts in `/debug/` and `/migration/`
+- Verified all npm scripts are functional
+- Created **DEVELOPER_GUIDE.md** as single source of truth
+
+📖 See: [CLEANUP_LOG.md](CLEANUP_LOG.md)
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Tech |
+|-------|------|
+| **Frontend** | React 18 + Vite + TypeScript + Axios |
+| **Backend** | Node.js 18 + Express + TypeScript |
+| **Database** | PostgreSQL 16 + SQL migrations |
+| **DevOps** | Docker + Docker Compose + Render |
+
+---
+
+## 🐛 Quick Troubleshooting
+
+| Problema | Solución |
+|----------|----------|
+| "ECONNREFUSED localhost:5432" | Run: `npm run db:up` |
+| Frontend doesn't load | Check: `npm run dev` running + `VITE_API_BASE_URL` set |
+| Sync stuck/hanging | Network issue or rate limit - wait 5 min, retry |
+| Data looks wrong | Run: `npm run fix:refs` + `npm run update:tcgtracking:images` |
+
+📖 Full troubleshooting: [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md#-debugging) + [Render.md](Render.md)
+
+---
+
+## 📞 Getting Help
+
+Need help? Check:
+
+1. **Setup issues?** → [QUICKSTART.md](QUICKSTART.md)
+2. **Sync issues?** → [SYNC_METHODS.md](SYNC_METHODS.md)
+3. **API questions?** → [README_ADMIN.md](README_ADMIN.md)
+4. **Deployment?** → [Render.md](Render.md)
+5. **Project structure?** → [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) ⭐
+6. **Everything else?** → [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) (comprehensive!)
+
+---
+
+## 📝 Data Sources
+
+- **Pokemon TCG API** - Official Pokémon card database  
+- **TCGdex** - Community multilanguage database (EN, JA, ZH, etc)
+- **TCGTracking** - Japanese exclusive pricing & data
+- **TCGCSV / TCGPlayer** - Product & pricing data
+
+---
+
+## ✅ Status
+
+| Category | Status | Last Updated |
+|----------|--------|--------------|
+| Functionality | ✅ All working | April 12, 2026 |
+| Documentation | ✅ Complete & consolidated | April 12, 2026 |
+| Code quality | ✅ Clean, no dead code | April 12, 2026 |
+| Deployment | ✅ Render-ready | April 12, 2026 |
+
+---
+
+**👉 NEW DEVELOPERS: Start with [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)**
 
 # Ver status de BBDD
 curl http://localhost:3000/admin/status/db

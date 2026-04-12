@@ -10,7 +10,7 @@ COPY package*.json ./
 COPY tsconfig.json ./
 
 # Instalar dependencias
-RUN npm ci
+RUN npm ci --production=false
 
 # Copiar código fuente
 COPY src/ ./src/
@@ -20,9 +20,10 @@ COPY scripts/ ./scripts/
 COPY docker-entrypoint.sh /app/docker-entrypoint.sh
 RUN chmod +x /app/docker-entrypoint.sh
 
-# Exponer puerto
-EXPOSE 3000
+# Exponer puerto dinámico (Render & desarrollo)
+ARG PORT=3000
+EXPOSE ${PORT}
 
 # Usar el script de entrada
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "start"]

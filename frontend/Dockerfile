@@ -11,7 +11,6 @@ COPY tsconfig.json ./
 COPY tsconfig.node.json ./
 COPY vite.config.ts ./
 COPY index.html ./
-COPY .env.docker .env
 
 # Instalar dependencias
 RUN npm ci
@@ -19,12 +18,26 @@ RUN npm ci
 # Copiar código fuente
 COPY src/ ./src/
 
-# Copiar script de entrada
-COPY docker-entrypoint.sh /app/docker-entrypoint.sh
-RUN chmod +x /app/docker-entrypoint.sh
+# Build
+RUN npm run build
+
+# Production stage - Serve static files
+FROM node:20-alpine AS prod
+
+WORKDIR /app
+
+# Instalar un simple HTTP server para servir archivos estáticos
+RUN npm install -g serve
+
+# Copiar dist del builder
+COPY --from=dev /app/dist ./dist
 
 # Exponer puerto
-EXPOSE 5173
+EXPOSE 3000
 
-# Usar el script de entrada
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3000', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+
+# Servir con serve (preserva routing para SPA)
+CMD ["serve", "-s", "dist", "-l", "3000"]
