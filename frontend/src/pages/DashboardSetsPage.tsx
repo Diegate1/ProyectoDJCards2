@@ -33,21 +33,10 @@ export const DashboardSetsPage: React.FC = () => {
       if (page === 1) setLoading(true);
       
       const response = await dataService.getSets(page, pageSize);
-      
-      // Validar estructura de respuesta
-      if (!response || !response.pagination) {
-        console.warn('Warning: Response missing pagination data', response);
-        setSets([]);
-        setTotalItems(0);
-        setTotalPages(0);
-        setError('No data returned from server');
-        return;
-      }
-      
-      setSets(response.items || []);
-      setTotalItems(response.pagination?.totalItems || 0);
+      setSets(response.items);
+      setTotalItems(response.pagination.totalItems);
       setCurrentPage(page);
-      setTotalPages(response.pagination?.totalPages || 0);
+      setTotalPages(response.pagination.totalPages);
       setError(null);
     } catch (err) {
       setError((err as Error).message);
@@ -83,20 +72,10 @@ export const DashboardSetsPage: React.FC = () => {
           setCurrentPage(1);
         } catch (err) {
           console.error('Error loading sets:', err);
-        
-        // Validar estructura de respuesta
-        if (!response || !response.pagination) {
-          console.warn('Warning: Search response missing pagination data', response);
-          setSets([]);
-          setTotalItems(0);
-          setTotalPages(0);
-          return;
         }
-        
-        setSets(response.items || []);
-        setTotalItems(response.pagination?.totalItems || 0);
-        setCurrentPage(1);
-        setTotalPages(response.pagination?.totalPages || 0
+      })();
+      return;
+    }
 
     setIsSearching(true);
 
@@ -112,20 +91,10 @@ export const DashboardSetsPage: React.FC = () => {
       } catch (err) {
         setError((err as Error).message);
         console.error('Error searching sets:', err);
-      
-      // Validar estructura de respuesta
-      if (!response || !response.pagination) {
-        console.warn('Warning: Search page response missing pagination data', response);
-        setSets([]);
-        setTotalItems(0);
-        setTotalPages(0);
-        return;
+      } finally {
+        setIsSearching(false);
       }
-      
-      setSets(response.items || []);
-      setTotalItems(response.pagination?.totalItems || 0);
-      setCurrentPage(page);
-      setTotalPages(response.pagination?.totalPages || 0
+    }, 500); // Debounce en 500ms como CardsPage
   }, [pageSize]);
 
   // Cargar página de búsqueda
