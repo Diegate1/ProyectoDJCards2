@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import { database } from '../src/db/database';
+import { database } from '../../src/db/database';
 
 dotenv.config();
 

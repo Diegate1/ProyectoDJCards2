@@ -8,9 +8,13 @@ if [ -n "$DATABASE_URL" ]; then
   echo "✓ Modo Render detectado (DATABASE_URL configurada)"
   echo "  Esperando a que la base de datos sea accesible..."
   
-  # Para Render, esperar con pg_isready sin hostname específico
+  # Para Render, esperar con pg_isready usando la URL
+  # Extraer hostname de la URL: postgresql://user:pass@host:port/db
+  DB_HOST=$(echo "$DATABASE_URL" | sed -n 's/.*@\([^:]*\).*/\1/p')
+  DB_USER=$(echo "$DATABASE_URL" | sed -n 's/.*\/\/\([^:]*\).*/\1/p')
+  
   for i in {1..30}; do
-    if timeout 5 bash -c "</dev/tcp/$(echo $DATABASE_URL | grep -oP '(?<=@)[^:]+' | head -1)/5432" 2>/dev/null; then
+    if pg_isready -h "$DB_HOST" -U "$DB_USER" > /dev/null 2>&1; then
       echo "✓ Base de datos accesible"
       break
     fi
