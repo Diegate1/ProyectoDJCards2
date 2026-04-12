@@ -182,6 +182,32 @@ git push
 ```
 Then: Backend → Manual Deploy
 
+### ❌ "Cannot find module '/app/dist/main'"
+
+**Cause:** TypeScript never compiled. `npm run start` needs `dist/main.js` which doesn't exist.
+
+**Why:** Old Dockerfile copied `src/` but never ran `npm run build`
+
+**Fix (already applied):**
+```bash
+git pull origin main
+git push
+```
+Then: Backend → "Manual Deploy" (forces rebuild with new Dockerfile)
+
+**Expected in logs:**
+```
+🔨 Building TypeScript...
+✓ Build completed
+📌 Iniciando servidor con comando: npm run start
+✅ SERVER STARTED SUCCESSFULLY
+```
+
+**If still fails after Manual Deploy:**
+1. Try again - first rebuild may use old cache
+2. Check that git pull got latest commits: `git log --oneline -3`
+3. If needed, force push: `git push -f origin main`
+
 ### ❌ Database connection timeout
 
 **Cause:** PostgreSQL not ready or wrong URL  

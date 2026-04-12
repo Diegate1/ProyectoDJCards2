@@ -74,6 +74,8 @@ Este repositorio ya incluye correcciones importantes para Render deployment:
 | ✅ BusyBox compatible | `docker-entrypoint.sh` | Removed `grep -P` (Alpine incompatible), using `sed` instead |
 | ✅ Port listening | `src/main.ts` | Configured to listen on `0.0.0.0:${process.env.PORT}` |
 | ✅ pg_isready for DB check | `docker-entrypoint.sh` | Using standard `pg_isready` command |
+| ✅ **TypeScript compilation** | `Dockerfile` | **NUEVO:** Added `npm run build` before `npm run start` |
+| ✅ Enhanced debugging | `docker-entrypoint.sh`, `src/main.ts`, `scripts/migration/migrate.ts` | Step-by-step logging with `set -eux` |
 
 **Si ves errores relacionados a estos,** verificar que estás usando la última versión:
 ```bash
@@ -602,6 +604,35 @@ grep "from '../../src/db/database'" scripts/migration/migrate.ts
 - El archivo `docker-entrypoint.sh` debe usar `sed` en lugar de `grep -oP` para extraer hostname
 - Si ves este error en logs, verifica que Render está usando la última versión del repo:
   - Dashboard → Backend Service → "Manual Deploy" (fuerza rebuild)
+
+### ❌ "Cannot find module '/app/dist/main'"
+
+**Razón:** TypeScript no fue compilado a JavaScript. `npm run start` busca `dist/main.js` que no existe.
+
+**Causa raíz:** Dockerfile anterior no incluía paso de compilación
+
+**Solución (ya aplicada en repo):**
+```bash
+# Pull latest Dockerfile con build step
+git pull origin main
+git push
+```
+
+Luego en Render:
+- Backend → "Manual Deploy" (fuerza rebuild con Dockerfile actualizado)
+
+**Esperado en logs:**
+```
+🔨 Building TypeScript...
+✓ Build completed
+📌 Iniciando servidor: npm run start
+✅ SERVER STARTED SUCCESSFULLY
+```
+
+Si sigue fallando:
+1. Esperar 5-10 minutos (rebuild completo)
+2. Si sigue: Backend → "Manual Deploy" nuevamente
+3. Verificar que commits llegaron: `git log --oneline -3` debe incluir "Add TypeScript compilation"
 
 ### ❌ Backend starts but "No open ports detected"
 
