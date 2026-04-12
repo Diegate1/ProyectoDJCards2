@@ -84,7 +84,25 @@ https://pokemontcg-frontend.onrender.com
 
 ---
 
-## 🚨 COMMON ISSUES & FIXES
+## ✅ FIXES ALREADY APPLIED
+
+This repo includes critical fixes for Render deployments:
+
+| ✅ Fix | Location | Details |
+|--------|----------|---------|
+| **Correct paths** | `scripts/migration/migrate.ts` | Import path fixed: `../../src/db/database` |
+| **Alpine compatible** | `docker-entrypoint.sh` | Replaced `grep -P` with `sed` (BusyBox safe) |
+| **Port binding** | `src/main.ts` | Listens on `0.0.0.0` for Render |
+| **DB connection** | `docker-entrypoint.sh` | Using standard `pg_isready` command |
+| **package-lock** | Root + frontend | Tracked for `npm ci` in Docker |
+
+**If you see related errors → Pull latest version:**
+```bash
+git pull origin main
+# Then: Dashboard → Manual Deploy
+```
+
+---
 
 ### Issue: Backend shows 503
 
