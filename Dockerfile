@@ -9,12 +9,17 @@ RUN apk add --no-cache postgresql-client bash
 COPY package*.json ./
 COPY tsconfig.json ./
 
-# Instalar dependencias
+# Instalar dependencias (incluye devDependencies para build)
 RUN npm ci --production=false
 
 # Copiar código fuente
 COPY src/ ./src/
 COPY scripts/ ./scripts/
+
+# 🔨 COMPILAR TYPESCRIPT A dist/
+RUN echo "📦 Building TypeScript..." && \
+    npm run build && \
+    echo "✓ Build completed"
 
 # Copiar script de entrada
 COPY docker-entrypoint.sh /app/docker-entrypoint.sh
