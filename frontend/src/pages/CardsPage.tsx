@@ -54,23 +54,14 @@ export const CardsPage: React.FC = () => {
       setError(null);
       const response = await dataService.getCards(page, pageSize, setId || undefined);
       
-      // Validar estructura de respuesta
-      if (!response || !response.pagination) {
-        console.warn('Warning: Response missing pagination data', response);
-        setCards([]);
-        setTotalItems(0);
-        setError('No data returned from server');
-        return;
-      }
-      
-      setCards(response.items || []);
-      setTotalItems(response.pagination?.totalItems || 0);
+      setCards(response?.items || []);
+      setTotalItems(response?.pagination?.totalItems || 0);
       setCurrentPage(page);
       setHasSearched(false);
 
       // Extraer nombre del set del primer item
-      if ((response.items || []).length > 0 && !setName && setId) {
-        setSetName(response.items?.[0]?.set?.name || 'Unknown');
+      if ((response?.items || []).length > 0 && !setName && setId) {
+        setSetName(response?.items?.[0]?.set?.name || 'Unknown');
       }
     } catch (err) {
       setError((err as Error).message);
@@ -92,20 +83,13 @@ export const CardsPage: React.FC = () => {
         pageSize
       );
       
-      // Validar estructura de respuesta
-      if (!response || !response.pagination) {
-        console.warn('Warning: Search results missing pagination data', response);
-        setCards([]);
-        setTotalItems(0);
-        return;
-      }
-      
-      setCards(response.items || []);
-      setTotalItems(response.pagination?.totalItems || 0);
+      setCards(response?.items || []);
+      setTotalItems(response?.pagination?.totalItems || 0);
       setCurrentPage(page);
       setHasSearched(true);
     } catch (err) {
       setError((err as Error).message);
+      setCards([]);
       console.error('Error loading search results:', err);
     } finally {
       setLoading(false);
@@ -151,20 +135,13 @@ export const CardsPage: React.FC = () => {
           1000  // Cargar hasta 1000 resultados max
         );
         
-        // Validar estructura de respuesta
-        if (!response || !response.pagination) {
-          console.warn('Warning: Search response missing pagination data', response);
-          setCards([]);
-          setTotalItems(0);
-          return;
-        }
-        
-        setCards(response.items || []);
-        setTotalItems(response.pagination?.totalItems || 0);
+        setCards(response?.items || []);
+        setTotalItems(response?.pagination?.totalItems || 0);
         setCurrentPage(1);
         setHasSearched(true);
       } catch (err) {
         console.error('Search error:', err);
+        setCards([]);
       } finally {
         setIsSearching(false);
       }

@@ -33,13 +33,14 @@ export const DashboardSetsPage: React.FC = () => {
       if (page === 1) setLoading(true);
       
       const response = await dataService.getSets(page, pageSize);
-      setSets(response.items);
-      setTotalItems(response.pagination.totalItems);
+      setSets(response?.items || []);
+      setTotalItems(response?.pagination?.totalItems || 0);
       setCurrentPage(page);
-      setTotalPages(response.pagination.totalPages);
+      setTotalPages(response?.pagination?.totalPages || 0);
       setError(null);
     } catch (err) {
       setError((err as Error).message);
+      setSets([]);
       console.error('Error loading sets:', err);
     } finally {
       setLoading(false);
@@ -83,13 +84,14 @@ export const DashboardSetsPage: React.FC = () => {
       try {
         // Usar el endpoint /sets/search que busca en la BD
         const response = await dataService.searchSets(value, 1, 50);
-        setSets(response.items);
-        setTotalItems(response.pagination.totalItems);
+        setSets(response?.items || []);
+        setTotalItems(response?.pagination?.totalItems || 0);
         setCurrentPage(1);
-        setTotalPages(response.pagination.totalPages);
+        setTotalPages(response?.pagination?.totalPages || 0);
         setHasSearched(true);
       } catch (err) {
         setError((err as Error).message);
+        setSets([]);
         console.error('Error searching sets:', err);
       } finally {
         setIsSearching(false);
@@ -102,12 +104,13 @@ export const DashboardSetsPage: React.FC = () => {
     try {
       setLoading(true);
       const response = await dataService.searchSets(searchTerm, page, pageSize);
-      setSets(response.items);
-      setTotalItems(response.pagination.totalItems);
+      setSets(response?.items || []);
+      setTotalItems(response?.pagination?.totalItems || 0);
       setCurrentPage(page);
-      setTotalPages(response.pagination.totalPages);
+      setTotalPages(response?.pagination?.totalPages || 0);
     } catch (err) {
       setError((err as Error).message);
+      setSets([]);
       console.error('Error loading search results:', err);
     } finally {
       setLoading(false);
