@@ -33,10 +33,21 @@ export const DashboardSetsPage: React.FC = () => {
       if (page === 1) setLoading(true);
       
       const response = await dataService.getSets(page, pageSize);
-      setSets(response.items);
-      setTotalItems(response.pagination.totalItems);
+      
+      // Validar estructura de respuesta
+      if (!response || !response.pagination) {
+        console.warn('Warning: Response missing pagination data', response);
+        setSets([]);
+        setTotalItems(0);
+        setTotalPages(0);
+        setError('No data returned from server');
+        return;
+      }
+      
+      setSets(response.items || []);
+      setTotalItems(response.pagination?.totalItems || 0);
       setCurrentPage(page);
-      setTotalPages(response.pagination.totalPages);
+      setTotalPages(response.pagination?.totalPages || 0);
       setError(null);
     } catch (err) {
       setError((err as Error).message);
@@ -72,10 +83,20 @@ export const DashboardSetsPage: React.FC = () => {
           setCurrentPage(1);
         } catch (err) {
           console.error('Error loading sets:', err);
+        
+        // Validar estructura de respuesta
+        if (!response || !response.pagination) {
+          console.warn('Warning: Search response missing pagination data', response);
+          setSets([]);
+          setTotalItems(0);
+          setTotalPages(0);
+          return;
         }
-      })();
-      return;
-    }
+        
+        setSets(response.items || []);
+        setTotalItems(response.pagination?.totalItems || 0);
+        setCurrentPage(1);
+        setTotalPages(response.pagination?.totalPages || 0
 
     setIsSearching(true);
 
@@ -91,10 +112,20 @@ export const DashboardSetsPage: React.FC = () => {
       } catch (err) {
         setError((err as Error).message);
         console.error('Error searching sets:', err);
-      } finally {
-        setIsSearching(false);
+      
+      // Validar estructura de respuesta
+      if (!response || !response.pagination) {
+        console.warn('Warning: Search page response missing pagination data', response);
+        setSets([]);
+        setTotalItems(0);
+        setTotalPages(0);
+        return;
       }
-    }, 500); // Debounce en 500ms como CardsPage
+      
+      setSets(response.items || []);
+      setTotalItems(response.pagination?.totalItems || 0);
+      setCurrentPage(page);
+      setTotalPages(response.pagination?.totalPages || 0
   }, [pageSize]);
 
   // Cargar página de búsqueda

@@ -54,14 +54,23 @@ export const CardsPage: React.FC = () => {
       setError(null);
       const response = await dataService.getCards(page, pageSize, setId || undefined);
       
-      setCards(response.items);
-      setTotalItems(response.pagination.totalItems);
+      // Validar estructura de respuesta
+      if (!response || !response.pagination) {
+        console.warn('Warning: Response missing pagination data', response);
+        setCards([]);
+        setTotalItems(0);
+        setError('No data returned from server');
+        return;
+      }
+      
+      setCards(response.items || []);
+      setTotalItems(response.pagination?.totalItems || 0);
       setCurrentPage(page);
       setHasSearched(false);
 
       // Extraer nombre del set del primer item
-      if (response.items.length > 0 && !setName && setId) {
-        setSetName(response.items[0].set.name);
+      if ((response.items || []).length > 0 && !setName && setId) {
+        setSetName(response.items?.[0]?.set?.name || 'Unknown');
       }
     } catch (err) {
       setError((err as Error).message);
@@ -83,8 +92,16 @@ export const CardsPage: React.FC = () => {
         pageSize
       );
       
-      setCards(response.items);
-      setTotalItems(response.pagination.totalItems);
+      // Validar estructura de respuesta
+      if (!response || !response.pagination) {
+        console.warn('Warning: Search results missing pagination data', response);
+        setCards([]);
+        setTotalItems(0);
+        return;
+      }
+      
+      setCards(response.items || []);
+      setTotalItems(response.pagination?.totalItems || 0);
       setCurrentPage(page);
       setHasSearched(true);
     } catch (err) {
@@ -110,8 +127,11 @@ export const CardsPage: React.FC = () => {
       (async () => {
         try {
           const response = await dataService.getCards(1, pageSize, setId || undefined);
-          setCards(response.items);
-          setTotalItems(response.pagination.totalItems);
+          // Validar estructura
+          if (response && response.pagination) {
+            setCards(response.items || []);
+            setTotalItems(response.pagination?.totalItems || 0);
+          }
         } catch (err) {
           console.error('Error loading cards:', err);
         }
@@ -131,8 +151,16 @@ export const CardsPage: React.FC = () => {
           1000  // Cargar hasta 1000 resultados max
         );
         
-        setCards(response.items);
-        setTotalItems(response.pagination.totalItems);
+        // Validar estructura de respuesta
+        if (!response || !response.pagination) {
+          console.warn('Warning: Search response missing pagination data', response);
+          setCards([]);
+          setTotalItems(0);
+          return;
+        }
+        
+        setCards(response.items || []);
+        setTotalItems(response.pagination?.totalItems || 0);
         setCurrentPage(1);
         setHasSearched(true);
       } catch (err) {
