@@ -31,7 +31,7 @@ cd frontend && npm run dev  # Frontend: http://localhost:5173
 | 👨‍💻 **Comenzar con el proyecto** | [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) ⭐ |
 | ⚡ **Quick setup (5 min)** | [QUICKSTART.md](QUICKSTART.md) |
 | 🔄 **Sincronizar datos** | [SYNC_METHODS.md](SYNC_METHODS.md) |
-| 🚀 **Deploy a Render** | [Render.md](Render.md) |
+| 🚀 **Deploy a Render** | [renderConfig.md](renderConfig.md) (detallado) o [RENDER_QUICK_REFERENCE.md](RENDER_QUICK_REFERENCE.md) (rápido) |
 | 🔧 **Admin endpoints** | [README_ADMIN.md](README_ADMIN.md) |
 | 🧹 **Qué se limpió** | [CLEANUP_LOG.md](CLEANUP_LOG.md) |
 
@@ -199,16 +199,24 @@ docker-compose down
 
 ### Production (Render.com)
 
-👉 **Complete guide:** [Render.md](Render.md)
+**Three deployment guides available:**
 
+| Necesitas... | Lee... | Tiempo |
+|---|---|---|
+| Referencia rápida | [RENDER_QUICK_REFERENCE.md](RENDER_QUICK_REFERENCE.md) | 5m |
+| **Guía paso-a-paso completa** | **[renderConfig.md](renderConfig.md)** | **20m** |
+| Overview conceptual | [Render.md](Render.md) | 10m |
+
+**Quick start:**
 ```bash
-# Quick summary:
 1. Create PostgreSQL database in Render
 2. Create Backend Web Service
 3. Create Frontend Web Service
 4. Set environment variables
 5. Deploy!
 ```
+
+👉 **Recomendación:** Lee [renderConfig.md](renderConfig.md) para guía completa con paso-a-paso
 
 ---
 
@@ -255,7 +263,7 @@ Need help? Check:
 1. **Setup issues?** → [QUICKSTART.md](QUICKSTART.md)
 2. **Sync issues?** → [SYNC_METHODS.md](SYNC_METHODS.md)
 3. **API questions?** → [README_ADMIN.md](README_ADMIN.md)
-4. **Deployment?** → [Render.md](Render.md)
+4. **Render deployment?** → [renderConfig.md](renderConfig.md) (step-by-step) o [RENDER_QUICK_REFERENCE.md](RENDER_QUICK_REFERENCE.md) (quick)
 5. **Project structure?** → [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) ⭐
 6. **Everything else?** → [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) (comprehensive!)
 
