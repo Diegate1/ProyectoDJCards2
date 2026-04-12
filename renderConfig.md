@@ -64,6 +64,26 @@ git push origin main
 - `npm ci` **requiere** `package-lock.json` para reproductibilidad
 - Sin él, el build falla con: `npm ERR! The package-lock.json file is missing`
 
+### ✅ Fixes aplicados al repositorio
+
+Este repositorio ya incluye correcciones importantes para Render deployment:
+
+| Fix | Archivo | Descripción |
+|-----|---------|------------|
+| ✅ Import path correcto | `scripts/migration/migrate.ts` | Changed `../src/db/database` to `../../src/db/database` |
+| ✅ BusyBox compatible | `docker-entrypoint.sh` | Removed `grep -P` (Alpine incompatible), using `sed` instead |
+| ✅ Port listening | `src/main.ts` | Configured to listen on `0.0.0.0:${process.env.PORT}` |
+| ✅ pg_isready for DB check | `docker-entrypoint.sh` | Using standard `pg_isready` command |
+
+**Si ves errores relacionados a estos,** verificar que estás usando la última versión:
+```bash
+git log --oneline -3  # Ver últimos commits
+# Debería incluir: "Fix critical Render deployment issues"
+
+# Si no:
+git pull origin main
+```
+
 ---
 
 ## 🔍 CONCEPTOS RENDER
@@ -528,6 +548,44 @@ Verificar en Frontend:
 1. Copiar DATABASE_URL completa desde Render DB panel
 2. Revisar que no hay caracteres especiales encoded mal
 3. Pegar completa en Backend environment
+
+### ❌ Migration fails: "Cannot find module '../src/db/database'"
+
+**Razón:** Ruta de import relativa incorrecta (común en proyectos monorepo)
+
+**Solución (ya aplicada en repo):**
+- El archivo `scripts/migration/migrate.ts` debe usar: `../../src/db/database` (no `../src/db/database`)
+- Si ves este error, verifica que la versión en GitHub tiene el fix
+
+```bash
+# Verificar que el import es correcto:
+grep "from '../../src/db/database'" scripts/migration/migrate.ts
+# Debería devolver el import correcto
+```
+
+### ❌ "grep: unrecognized option: P" or grep -P not found
+
+**Razón:** Alpine/BusyBox no soporta Perl regex (`-P` flag)
+
+**Solución (ya aplicada en repo):**
+- El archivo `docker-entrypoint.sh` debe usar `sed` en lugar de `grep -oP` para extraer hostname
+- Si ves este error en logs, verifica que Render está usando la última versión del repo:
+  - Dashboard → Backend Service → "Manual Deploy" (fuerza rebuild)
+
+### ❌ Backend starts but "No open ports detected"
+
+**Razón:** Backend cae antes de abrir puerto por error en startup
+
+**Causas posibles:**
+1. Migration falla (ver arriba: "Cannot find module...")
+2. DATABASE_URL malformada
+3. Port variable no configurada
+
+**Solución:**
+1. Ver Backend Logs en Render Dashboard
+2. Si hay error de migrations: revisar DATABASE_URL
+3. Asegurarse que PORT=3000 está en variables
+4. Hacer Manual Deploy después de revisar variables
 
 ---
 
