@@ -8,6 +8,8 @@ import './DashboardSetsPage.css';
 type SortField = 'name' | 'date' | 'cardCount';
 type SortOrder = 'asc' | 'desc';
 
+type SortValue = string | number;
+
 export const DashboardSetsPage: React.FC = () => {
   const navigate = useNavigate();
   const [sets, setSets] = useState<SetDto[]>([]);
@@ -130,8 +132,8 @@ export const DashboardSetsPage: React.FC = () => {
 
     // Ordenamiento
     results.sort((a, b) => {
-      let aVal: any;
-      let bVal: any;
+      let aVal: SortValue;
+      let bVal: SortValue;
 
       switch (sortField) {
         case 'name':

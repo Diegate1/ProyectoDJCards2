@@ -113,6 +113,7 @@ export class DataController {
           c.id,
           c.name,
           c.number,
+          c.rarity,
           c.image_small_url,
           c.image_large_url,
           c.set_id,
@@ -162,6 +163,7 @@ export class DataController {
         id: row.id,
         name: row.name,
         number: row.number,
+        rarity: row.rarity || undefined,
         imageUrl: DataFormatterService.resolveImageUrl(
           row.image_small_url,
           row.image_large_url,
@@ -249,6 +251,7 @@ export class DataController {
           c.id,
           c.name,
           c.number,
+          c.rarity,
           c.image_small_url,
           c.image_large_url,
           c.set_id,
@@ -328,6 +331,7 @@ export class DataController {
         id: row.id,
         name: row.name,
         number: row.number,
+        rarity: row.rarity || undefined,
         imageUrl: DataFormatterService.resolveImageUrl(
           row.image_small_url,
           row.image_large_url,

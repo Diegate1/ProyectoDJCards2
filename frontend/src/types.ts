@@ -33,6 +33,7 @@ export interface CardDto {
   name: string;
   number: string;
   imageUrl: string;
+  rarity?: string;
   currentPrice: CurrentPriceDto;
   set: {
     id: string;

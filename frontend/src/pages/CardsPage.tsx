@@ -8,6 +8,8 @@ import './CardsPage.css';
 type SortField = 'name' | 'number' | 'price';
 type SortOrder = 'asc' | 'desc';
 
+type SortValue = string | number;
+
 export const CardsPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -60,7 +62,7 @@ export const CardsPage: React.FC = () => {
       setHasSearched(false);
 
       // Extraer nombre del set del primer item
-      if ((response?.items || []).length > 0 && !setName && setId) {
+      if ((response?.items || []).length > 0 && setId && !setName) {
         setSetName(response?.items?.[0]?.set?.name || 'Unknown');
       }
     } catch (err) {
@@ -69,7 +71,7 @@ export const CardsPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [setId, pageSize, setName]);
+  }, [setId, pageSize]);
 
   // Cargar página de resultados de búsqueda
   const loadSearchResultsPage = useCallback(async (page: number, searchTerm: string) => {
@@ -164,8 +166,8 @@ export const CardsPage: React.FC = () => {
 
     // Ordenamiento
     results.sort((a, b) => {
-      let aVal: any;
-      let bVal: any;
+      let aVal: SortValue;
+      let bVal: SortValue;
 
       switch (sortField) {
         case 'name':

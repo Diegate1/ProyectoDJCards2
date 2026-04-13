@@ -71,7 +71,7 @@ services:
       VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:3000}
       DOCKER_ENVIRONMENT: "true"
     ports:
-      - "${FRONTEND_PORT:-3000}:3000"
+      - "${FRONTEND_PORT:-5173}:3000"
     depends_on:
       backend:
         condition: service_healthy
