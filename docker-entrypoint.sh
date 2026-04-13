@@ -66,7 +66,7 @@ else
   echo "🔍 Esperando postgres (Docker Compose)..."
   for i in {1..30}; do
     echo "   Intento $i/30..."
-    if pg_isready -h postgres -U ${POSTGRES_USER:-pokemon} > /dev/null 2>&1; then
+    if pg_isready -h postgres -U ${POSTGRES_USER:-pokemon} -p 5432 > /dev/null 2>&1; then
       echo "✓ PostgreSQL LISTO"
       break
     fi
