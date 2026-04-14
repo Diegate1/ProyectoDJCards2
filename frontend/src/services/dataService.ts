@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import { PaginatedResponse, SetDto, CardDto, CardDetailDto } from './types';
+import { PaginatedResponse, SetDto, CardDto, CardDetailDto } from '../types';
 
 const API_BASE = '/api';
 
@@ -16,9 +16,18 @@ class DataService {
   /**
    * Obtener listado paginado de sets
    */
-  async getSets(page: number = 1, pageSize: number = 20): Promise<PaginatedResponse<SetDto>> {
+  async getSets(
+    page: number = 1,
+    pageSize: number = 20,
+    filters?: {
+      releaseDateFrom?: string;
+      releaseDateTo?: string;
+      cardCountFrom?: number;
+      cardCountTo?: number;
+    }
+  ): Promise<PaginatedResponse<SetDto>> {
     const response = await this.client.get<PaginatedResponse<SetDto>>('/sets', {
-      params: { page, pageSize },
+      params: { page, pageSize, ...filters },
     });
     return response.data;
   }
@@ -58,10 +67,16 @@ class DataService {
   async searchSets(
     name: string,
     page: number = 1,
-    pageSize: number = 20
+    pageSize: number = 20,
+    filters?: {
+      releaseDateFrom?: string;
+      releaseDateTo?: string;
+      cardCountFrom?: number;
+      cardCountTo?: number;
+    }
   ): Promise<PaginatedResponse<SetDto>> {
     const response = await this.client.get<PaginatedResponse<SetDto>>('/sets/search', {
-      params: { name, page, pageSize },
+      params: { name, page, pageSize, ...filters },
     });
     return response.data;
   }

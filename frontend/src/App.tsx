@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { DashboardSetsPage } from './pages/DashboardSetsPage';
 import { CardsPage } from './pages/CardsPage';
@@ -35,19 +35,20 @@ function App() {
             </a>
             <ul className="navbar-menu">
               <li>
-                <a href="/dashboard">Dashboard</a>
+                <a href="/dashboard">Sets</a>
               </li>
               <li>
                 <a href="/dashboard/cards">Catálogo</a>
               </li>
-            </ul>
-            <button
-              className="btn-theme-toggle"
-              onClick={handleToggleDarkMode}
-              title={darkMode ? 'Modo Claro' : 'Modo Noche'}
-            >
-              {darkMode ? '☀️ Día' : '🌙 Noche'}
-            </button>
+            </ul>           
+            <label className="toggle-switch" title={darkMode ? 'Modo Claro' : 'Modo Noche'}>
+              <input
+                type="checkbox"
+                checked={darkMode}
+                onChange={handleToggleDarkMode}
+              />
+              <span className="toggle-slider"></span>
+            </label>
           </div>
         </nav>
 

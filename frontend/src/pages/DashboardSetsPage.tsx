@@ -21,20 +21,25 @@ export const DashboardSetsPage: React.FC = () => {
   const [sortField, setSortField] = useState<SortField>('date');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [selectedLanguage, setSelectedLanguage] = useState<string>('');
+  const [yearFrom, setYearFrom] = useState<string>('');
+  const [yearTo, setYearTo] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const pageSize = 20;
   const searchTimeoutRef = useRef<NodeJS.Timeout>();
-  const [isSearching, setIsSearching] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false);
 
   // Cargar sets paginadamente
   const loadSetsPage = useCallback(async (page: number) => {
     try {
       if (page === 1) setLoading(true);
       
-      const response = await dataService.getSets(page, pageSize);
+      const filters = {
+        releaseDateFrom: yearFrom ? `${yearFrom}-01-01` : undefined,
+        releaseDateTo: yearTo ? `${yearTo}-12-31` : undefined,
+      };
+      
+      const response = await dataService.getSets(page, pageSize, filters);
       setSets(response?.items || []);
       setTotalItems(response?.pagination?.totalItems || 0);
       setCurrentPage(page);
@@ -47,7 +52,7 @@ export const DashboardSetsPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [pageSize]);
+  }, [pageSize, yearFrom, yearTo]);
 
   // Cargar primera página al montar
   useEffect(() => {
@@ -64,48 +69,38 @@ export const DashboardSetsPage: React.FC = () => {
 
     if (value.trim().length === 0) {
       setSets([]);
-      setHasSearched(false);
-      // Recargar sets iniciales
-      (async () => {
-        try {
-          const response = await dataService.getSets(1, pageSize);
-          setSets(response.items);
-          setTotalItems(response.pagination.totalItems);
-          setTotalPages(response.pagination.totalPages);
-          setCurrentPage(1);
-        } catch (err) {
-          console.error('Error loading sets:', err);
-        }
-      })();
+      loadSetsPage(1);
       return;
     }
 
-    setIsSearching(true);
-
     searchTimeoutRef.current = setTimeout(async () => {
       try {
-        // Usar el endpoint /sets/search que busca en la BD
-        const response = await dataService.searchSets(value, 1, 50);
+        const filters = {
+          releaseDateFrom: yearFrom ? `${yearFrom}-01-01` : undefined,
+          releaseDateTo: yearTo ? `${yearTo}-12-31` : undefined,
+        };
+        const response = await dataService.searchSets(value, 1, 50, filters);
         setSets(response?.items || []);
         setTotalItems(response?.pagination?.totalItems || 0);
         setCurrentPage(1);
         setTotalPages(response?.pagination?.totalPages || 0);
-        setHasSearched(true);
       } catch (err) {
         setError((err as Error).message);
         setSets([]);
         console.error('Error searching sets:', err);
-      } finally {
-        setIsSearching(false);
       }
-    }, 500); // Debounce en 500ms como CardsPage
-  }, [pageSize]);
+    }, 500);
+  }, [pageSize, yearFrom, yearTo]);
 
   // Cargar página de búsqueda
   const loadSearchResultsPage = useCallback(async (page: number, searchTerm: string) => {
     try {
       setLoading(true);
-      const response = await dataService.searchSets(searchTerm, page, pageSize);
+      const filters = {
+        releaseDateFrom: yearFrom ? `${yearFrom}-01-01` : undefined,
+        releaseDateTo: yearTo ? `${yearTo}-12-31` : undefined,
+      };
+      const response = await dataService.searchSets(searchTerm, page, pageSize, filters);
       setSets(response?.items || []);
       setTotalItems(response?.pagination?.totalItems || 0);
       setCurrentPage(page);
@@ -176,12 +171,13 @@ export const DashboardSetsPage: React.FC = () => {
 
   const handleResetFilters = () => {
     setSearchTerm('');
-    setHasSearched(false);
     setSortField('date');
     setSortOrder('desc');
     setSelectedLanguage('');
+    setYearFrom('');
+    setYearTo('');
     setCurrentPage(1);
-    loadSetsPage(1); // Recargar la primera página
+    loadSetsPage(1);
   };
 
   if (error && sets.length === 0) {
@@ -190,24 +186,15 @@ export const DashboardSetsPage: React.FC = () => {
 
   return (
     <div className="dashboard-sets-page">
-      <header className="page-header">
-        <h1>🎴 Sets de Pokémon TCG</h1>
-        <p>
-          {searchTerm ? (
-            <>Encontrados {totalItems} sets</>
-          ) : (
-            <>Total: {totalItems} sets</>
-          )}
-        </p>
-      </header>
+
 
       {/* Panel de Filtros */}
       <div className="filters-panel">
-        <div className="filter-group search-group">
+        <div className="search-group">
           <input
             type="text"
             className="filter-input search-input"
-            placeholder="🔍 Buscar set (Base, Perfect Order, etc...)"
+            placeholder="🔍 Buscar set..."
             value={searchTerm}
             onChange={(e) => handleSearchChange(e.target.value)}
           />
@@ -215,56 +202,97 @@ export const DashboardSetsPage: React.FC = () => {
             <button 
               className="search-clear-btn"
               onClick={() => handleSearchChange('')}
-              title="Limpiar búsqueda"
+              title="Limpiar"
             >
               ✕
             </button>
           )}
         </div>
 
-        <div className="filter-group">
-          <label>🌐 Idioma</label>
-          <select
-            className="filter-select"
-            value={selectedLanguage}
-            onChange={(e) => {
-              setSelectedLanguage(e.target.value);
-              setCurrentPage(1);
-            }}
-          >
-            <option value="">Todos los idiomas</option>
-            <option value="English">English</option>
-            <option value="日本語">日本語 (Japonés)</option>
-            <option value="中文">中文 (Chino)</option>
-          </select>
-        </div>
+        <div className="filters-row">
+          <div className="filter-group">
+            <label>Idioma:</label>
+            <select
+              className="filter-select"
+              value={selectedLanguage}
+              onChange={(e) => {
+                setSelectedLanguage(e.target.value);
+                setCurrentPage(1);
+                loadSetsPage(1);
+              }}
+            >
+              <option value="">🌐 Todos</option>
+              <option value="English">🇬🇧 English</option>
+              <option value="日本語">🇯🇵 日本語</option>
+              <option value="中文">🇨🇳 中文</option>
+            </select>
 
-        <div className="filter-group">
-          <select
-            className="filter-select"
-            value={`${sortField}-${sortOrder}`}
-            onChange={(e) => {
-              const [field, order] = e.target.value.split('-') as [SortField, SortOrder];
-              setSortField(field);
-              setSortOrder(order);
-            }}
-          >
-            <option value="date-desc">📅 Fecha (Más Reciente)</option>
-            <option value="date-asc">📅 Fecha (Más Antiguo)</option>
-            <option value="name-asc">A→Z Nombre</option>
-            <option value="name-desc">Z→A Nombre</option>
-            <option value="cardCount-asc">🔢 Menos Cartas</option>
-            <option value="cardCount-desc">🔢 Más Cartas</option>
-          </select>
-        </div>
+            
+          </div>
 
-        {(searchTerm || selectedLanguage || sortField !== 'date' || sortOrder !== 'desc') && (
-          <button className="btn-reset-filters" onClick={handleResetFilters}>
-            ✕ Limpiar Filtros
-          </button>
-        )}
+          <div className="filter-group">
+            <label>Desde:</label>
+            <select
+              className="filter-select"
+              value={yearFrom}
+              onChange={(e) => {
+                setYearFrom(e.target.value);
+                setCurrentPage(1);
+                loadSetsPage(1);
+              }}
+            >
+              <option value="">Año</option>
+              <option value="2026">2026</option>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+              <option value="2022">2022</option>
+              <option value="2021">2021</option>
+              <option value="2020">2020</option>
+              <option value="2019">2019</option>
+              <option value="2018">2018</option>
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label>Hasta:</label>
+            <select
+              className="filter-select"
+              value={yearTo}
+              onChange={(e) => {
+                setYearTo(e.target.value);
+                setCurrentPage(1);
+                loadSetsPage(1);
+              }}
+            >
+              <option value="">Año</option>
+              <option value="2026">2026</option>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+              <option value="2022">2022</option>
+              <option value="2021">2021</option>
+              <option value="2020">2020</option>
+              <option value="2019">2019</option>
+              <option value="2018">2018</option>
+            </select>
+          </div>
+
+          {(searchTerm || selectedLanguage || sortField !== 'date' || sortOrder !== 'desc' || yearFrom || yearTo) && (
+            <button className="btn-reset-filters" onClick={handleResetFilters}>
+              ✕ Limpiar
+            </button>
+          )}
+        </div>
       </div>
-
+      <div className="header-row">
+        <h1>🎴 Sets de Pokémon TCG</h1>
+        <h4>
+          {searchTerm 
+            ? ( <>Encontrados {totalItems} sets</> ) 
+            : ( <>Total: {totalItems} sets</>)}
+        </h4>
+      </div>
       {/* Tabla de Sets */}
       {displayedSets.length > 0 ? (
         <div className="sets-container">
@@ -345,7 +373,7 @@ export const DashboardSetsPage: React.FC = () => {
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={(page) => {
-            if (hasSearched) {
+            if (searchTerm) {
               loadSearchResultsPage(page, searchTerm);
             } else {
               loadSetsPage(page);

@@ -105,6 +105,7 @@
 
 .search-group {
   grid-column: 1 / -1;
+  max-width: 400px;
 }
 
 .filter-input,

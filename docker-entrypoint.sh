@@ -37,7 +37,7 @@ if [ "$MODE" = "render" ]; then
   DB_USER=$(echo "$DATABASE_URL" | sed -n 's/.*\/\/\([^:]*\).*/\1/p')
   DB_PASSWORD=$(echo "$DATABASE_URL" | sed -n 's/.*\/\/[^:]*:\([^@]*\).*/\1/p')
   DB_HOST=$(echo "$DATABASE_URL" | sed -n 's/.*@\([^:]*\).*/\1/p')
-  DB_PORT=$(echo "$DATABASE_URL" | sed -n 's/.*:\([0-9]*\)\/*/\1/p')
+  DB_PORT=$(echo "$DATABASE_URL" | sed -n 's/.*:\([0-9]*\):.*/\1/p')
   DB_NAME=$(echo "$DATABASE_URL" | sed -n 's/.*\/\([^?]*\).*/\1/p')
   
   echo "   User: $DB_USER"
@@ -50,7 +50,7 @@ if [ "$MODE" = "render" ]; then
   DB_READY=0
   for i in {1..30}; do
     echo "   Intento $i/30..."
-    if pg_isready -h "$DB_HOST" -U "$DB_USER" -p "$DB_PORT" 2>&1 | grep "accepting connections"; then
+    if pg_isready -h "$DB_HOST" -U "$DB_USER" -p "$DB_PORT" > /dev/null 2>&1; then
       echo "✓ PostgreSQL LISTO"
       DB_READY=1
       break

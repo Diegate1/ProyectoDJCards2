@@ -5,7 +5,7 @@ import { CardDto, SetDto } from '../types';
 import { PaginationControls } from '../components/PaginationControls';
 import './CardsPage.css';
 
-type SortField = 'name' | 'number' | 'price';
+type SortField = 'name' | 'number' | 'price' | 'rarity';
 type SortOrder = 'asc' | 'desc';
 
 type SortValue = string | number;
@@ -182,6 +182,10 @@ export const CardsPage: React.FC = () => {
           aVal = a.currentPrice.amount ?? 0;
           bVal = b.currentPrice.amount ?? 0;
           break;
+        case 'rarity':
+          aVal = (a.rarity || '').toLowerCase();
+          bVal = (b.rarity || '').toLowerCase();
+          break;
       }
 
       if (sortOrder === 'asc') {
@@ -276,7 +280,7 @@ export const CardsPage: React.FC = () => {
               ref={searchInputRef}
               type="text"
               className="filter-input search-input"
-              placeholder="🔍 Buscar por nombre, número (1, 15, etc)..."
+              placeholder="🔍 Buscar..."
               value={searchTerm}
               onChange={(e) => handleSearchChange(e.target.value)}
             />
@@ -321,6 +325,7 @@ export const CardsPage: React.FC = () => {
         </div>
 
         <div className="filter-group">
+          <label>✨ Rareza</label>
           <select
             className="filter-select"
             value={rarity}
@@ -329,7 +334,7 @@ export const CardsPage: React.FC = () => {
               setCurrentPage(1);
             }}
           >
-            <option value="">Todas las Rarezas</option>
+            <option value="">Todas</option>
             {rarities.map((r) => (
               <option key={r} value={r}>
                 {r}
@@ -385,7 +390,13 @@ export const CardsPage: React.FC = () => {
                 >
                   Nº {sortField === 'number' && (sortOrder === 'asc' ? '↑' : '↓')}
                 </th>
-                <th>Rareza</th>
+                <th
+                  className="sortable"
+                  onClick={() => handleSortChange('rarity')}
+                  title="Click para ordenar"
+                >
+                  Rareza {sortField === 'rarity' && (sortOrder === 'asc' ? '↑' : '↓')}
+                </th>
                 <th>Set</th>
                 <th
                   className="sortable"
