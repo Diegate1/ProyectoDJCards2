@@ -23,6 +23,8 @@ export const DashboardSetsPage: React.FC = () => {
   const [selectedLanguage, setSelectedLanguage] = useState<string>('');
   const [yearFrom, setYearFrom] = useState<string>('');
   const [yearTo, setYearTo] = useState<string>('');
+  const actualYear = new Date().getFullYear();
+  const years = Array.from({ length: actualYear - 1950 + 1 }, (_, i) => 1950 + i).reverse();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -241,16 +243,12 @@ export const DashboardSetsPage: React.FC = () => {
                 loadSetsPage(1);
               }}
             >
-              <option value="">Año</option>
-              <option value="2026">2026</option>
-              <option value="2025">2025</option>
-              <option value="2024">2024</option>
-              <option value="2023">2023</option>
-              <option value="2022">2022</option>
-              <option value="2021">2021</option>
-              <option value="2020">2020</option>
-              <option value="2019">2019</option>
-              <option value="2018">2018</option>
+              <option value="">Todos los años</option>
+                        {years.map(year => (
+                            <option key={year} value={year.toString()}>
+                                {year}
+                            </option>
+                        ))}
             </select>
           </div>
 
@@ -265,16 +263,12 @@ export const DashboardSetsPage: React.FC = () => {
                 loadSetsPage(1);
               }}
             >
-              <option value="">Año</option>
-              <option value="2026">2026</option>
-              <option value="2025">2025</option>
-              <option value="2024">2024</option>
-              <option value="2023">2023</option>
-              <option value="2022">2022</option>
-              <option value="2021">2021</option>
-              <option value="2020">2020</option>
-              <option value="2019">2019</option>
-              <option value="2018">2018</option>
+             <option value="">Todos los años</option>
+                        {years.map(year => (
+                            <option key={year} value={year.toString()}>
+                                {year}
+                            </option>
+                        ))}
             </select>
           </div>
 
